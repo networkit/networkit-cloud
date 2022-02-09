@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jhub-deployment
+  labels:
+    app: jupyterhub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jhub-deployment
+  template:
+    metadata:
+      labels:
+        app: jhub-deployment
+    spec:
+      serviceAccount: sa-with-anyuid-view-events-edit-pods
+      serviceAccountName: sa-with-anyuid-view-events-edit-pods
+      containers:
+      - image: fabratu/networkit-hub:latest # Optional: You can also put your own (or default) JupyterHub image here
+        name: networkit-hub
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 0
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: jupyterhub-persistent-storage
+          mountPath: /persistent/
+        env:
+        - name: JUPYTER_ENABLE_LAB
+          value: "yes"
+        command: ["/opt/conda/bin/python"]
+        args: ["/opt/conda/bin/jupyterhub","-f","/persistent/jupyterhub_config.py"]
+      volumes:
+      - name: jupyterhub-persistent-storage
+        persistentVolumeClaim:
+          claimName: jhub-pvc

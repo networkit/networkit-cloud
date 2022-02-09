@@ -1,0 +1,63 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scc-anyuid
+rules:
+- apiGroups:
+  - security.openshift.io
+  resourceNames:
+  - anyuid
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scc-view-events
+rules:
+- apiGroups: ["","events.k8s.io"]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sa-to-scc-view-events
+subjects:
+  - kind: ServiceAccount
+    name: sa-with-anyuid-view-events-edit-pods
+roleRef:
+  kind: Role
+  name: scc-view-events
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sa-to-scc-anyuid
+subjects:
+  - kind: ServiceAccount
+    name: sa-with-anyuid-view-events-edit-pods
+roleRef:
+  kind: Role
+  name: scc-anyuid
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sa-to-scc-podedit
+subjects:
+- kind: ServiceAccount
+  name: sa-with-anyuid-view-events-edit-pods
+roleRef:
+  kind: Role
+  name: podedit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-with-anyuid-view-events-edit-pods

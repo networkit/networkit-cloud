@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jhub-ingress
+  annotations:
+    route.openshift.io/termination: "edge"
+spec:
+  rules:
+  - host: # HOSTNAME
+    http:
+      paths:
+      - path: # URL-SUBPATH
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: jhub-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - # HOSTNAME
+    secretName: # SECRET, WHICH CONTAINS THE CERT-INFO
+
+# Hostname and url-subpath should resemble either the final service-url or a defined proxy-endpoint. Example: https://hostname/url-subpath
+# TLS Secret setup: https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
+# Examples for ingress set: https://kubernetes.io/docs/concepts/services-networking/ingress/

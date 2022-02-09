@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jhub-ingress
+spec:
+  rules:
+  - host: # Enter hostname
+    http:
+      paths:
+      - path: # enter non-domain url-subpath
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: jhub-service
+            port:
+              number: 80
+
+# Hostname and url-subpath should resemble either the final service-url or a defined proxy-endpoint. Example: https://hostname/url-subpath
+# Examples for ingress set: https://kubernetes.io/docs/concepts/services-networking/ingress/
